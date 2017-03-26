@@ -5,10 +5,10 @@ namespace Models
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
 
-    public partial class ModelsDbContext : DbContext
+    public partial class ModelDbContext : DbContext
     {
-        public ModelsDbContext()
-            : base("name=Models")
+        public ModelDbContext()
+            : base("name=ModelDbContext")
         {
         }
 
