@@ -25,11 +25,11 @@ namespace Models
         public string Correo { get; set; }
 
         [Required]
-        [StringLength(10)]
+        [StringLength(12)]
         public string Telefono { get; set; }
 
         [Required]
-        [StringLength(11)]
+        [StringLength(13)]
         public string Cedula { get; set; }
 
         public DateTime Fecha { get; set; }

@@ -1,12 +1,6 @@
 use [master]
 go
 
-IF DB_Id('PracticaArquitectura') IS NOT NULL
-BEGIN
-	DROP DATABASE [PracticaArquitectura]
-END
-go
-
 CREATE DATABASE [PracticaArquitectura]
 go
 
@@ -26,8 +20,8 @@ CREATE TABLE [dbo].[Peticiones](
 	[Nombre] [nvarchar](30) NOT NULL,
 	[Apellido] [nvarchar](30) NOT NULL,
 	[Correo] [nvarchar](50) NOT NULL,
-	[Telefono] [nvarchar](10) NOT NULL,
-	[Cedula] [nvarchar](11) NOT NULL,
+	[Telefono] [nvarchar](12) NOT NULL,
+	[Cedula] [nvarchar](13) NOT NULL,
 	[Fecha] [datetime] NOT NULL,
 	[Peticion] [nvarchar](1000) NOT NULL,
  CONSTRAINT [PK_Peticiones] PRIMARY KEY CLUSTERED 
@@ -38,7 +32,7 @@ CREATE TABLE [dbo].[Peticiones](
 
 GO
 
-/****** Object:  Table [dbo].[PeticionesNoProcesadas]    Script Date: 3/21/2017 12:36:22 AM ******/
+/****** Object:  Table [dbo].[PeticionesNoProcesadas]    Script Date: 3/26/2017 4:28:26 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -50,10 +44,14 @@ CREATE TABLE [dbo].[PeticionesNoProcesadas](
 	[Nombre] [nvarchar](30) NOT NULL,
 	[Apellido] [nvarchar](30) NOT NULL,
 	[Correo] [nvarchar](50) NOT NULL,
-	[Telefono] [nvarchar](10) NOT NULL,
-	[Cedula] [nvarchar](11) NOT NULL,
+	[Telefono] [nvarchar](12) NOT NULL,
+	[Cedula] [nvarchar](13) NOT NULL,
 	[Fecha] [datetime] NOT NULL,
-	[Peticion] [nvarchar](1000) NOT NULL
+	[Peticion] [nvarchar](1000) NOT NULL,
+ CONSTRAINT [PK_PeticionesNoProcesadas] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
 GO
