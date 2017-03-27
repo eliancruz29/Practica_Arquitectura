@@ -9,5 +9,6 @@ namespace Main_Web_Api.Models
     {
         public Guid Guid { get; set; }
         public string Fecha { get; set; }
+        public bool Procesada { get; set; }
     }
 }
