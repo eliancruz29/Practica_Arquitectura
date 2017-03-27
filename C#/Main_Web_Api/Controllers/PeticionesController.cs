@@ -1,11 +1,14 @@
 ﻿using Main_Web_Api.Models;
+using Main_Web_Api.Secundary_Service;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -17,6 +20,7 @@ namespace Main_Web_Api.Controllers
     {
         private ModelDbContext db = new ModelDbContext();
 
+        //  protocol://domain:port/api/Peticiones/SetPeticion
         [HttpPost]
         [ActionName("SetPeticion")]
         public async Task<IHttpActionResult> SetPeticion(PeticionDTO model)
@@ -31,6 +35,7 @@ namespace Main_Web_Api.Controllers
             return Ok(_guid);
         }
 
+        //  protocol://domain:port/api/Peticiones/GetPeticion/{Guid}
         [HttpGet]
         [ResponseType(typeof(PeticionDetalleDTO))]
         [ActionName("GetPeticion")]
@@ -51,7 +56,8 @@ namespace Main_Web_Api.Controllers
                     Correo = p.Correo,
                     Cedula = p.Cedula,
                     Fecha = p.Fecha.ToString(),
-                    Peticion = p.Peticion
+                    Peticion = p.Peticion,
+                    Procesada = true
                 }).SingleOrDefaultAsync(p => p.Guid.Equals(Id));
 
                 if (null == _peticion)
@@ -66,7 +72,8 @@ namespace Main_Web_Api.Controllers
                         Correo = p.Correo,
                         Cedula = p.Cedula,
                         Fecha = p.Fecha.ToString(),
-                        Peticion = p.Peticion
+                        Peticion = p.Peticion,
+                        Procesada = false
                     }).SingleOrDefaultAsync(p => p.Guid.Equals(Id));
                 }
 
@@ -81,15 +88,46 @@ namespace Main_Web_Api.Controllers
             }
         }
 
-        private void SendPeticion(Guid _guid, PeticionDTO model)
+        private async Task SendPeticion(Guid _guid, PeticionDTO model)
         {
-            Thread.Sleep(100);
+            Thread.Sleep(200);
 
             try
             {
+                string _proccess = ConfigurationManager.AppSettings["Proccess_Url"].ToString();
+                Who_Call whoCall = Who_Call.Instance;
+                var uriSecApi = whoCall.GetUrl();
+
+                if (string.IsNullOrWhiteSpace(uriSecApi.Result) || string.IsNullOrWhiteSpace(_proccess))
+                    SavePeticionNoProcesada(_guid, model);
+                else
+                {
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri(uriSecApi.Result);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpResponseMessage response = await client.PostAsJsonAsync(_proccess,
+                        new PeticionDetalleDTO()
+                        {
+                            Guid = _guid,
+                            Nombre = model.Nombre,
+                            Apellido = model.Apellido,
+                            Telefono = model.Telefono,
+                            Correo = model.Correo,
+                            Cedula = model.Cedula,
+                            Fecha = DateTime.Now.ToLongDateString(),
+                            Peticion = model.Peticion
+                        });
+                    
+                    if (!response.IsSuccessStatusCode || !response.Content.ReadAsAsync<bool>().Result)
+                        SavePeticionNoProcesada(_guid, model);
+                }
+            }
+            catch (Exception ex)
+            {
                 SavePeticionNoProcesada(_guid, model);
             }
-            catch (Exception ex) { }
         }
 
         private void SavePeticionNoProcesada(Guid _guid, PeticionDTO model)

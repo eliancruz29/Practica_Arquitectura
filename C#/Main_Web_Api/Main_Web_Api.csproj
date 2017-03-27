@@ -96,7 +96,10 @@
     </Compile>
     <Compile Include="Models\PeticionDetalleDTO.cs" />
     <Compile Include="Models\PeticionDTO.cs" />
+    <Compile Include="Models\ProPeticionDTO.cs" />
+    <Compile Include="Models\UriApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Secundary_Service\Who_Call.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
