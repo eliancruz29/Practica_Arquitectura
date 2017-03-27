@@ -1,0 +1,4 @@
+Main_Api:
+	URL: 			http://main-api.azurewebsites.net/
+	SetPeticion:		http://main-api.azurewebsites.net/api/Peticiones/SetPeticion
+	GetPeticiones:		http://main-api.azurewebsites.net/api/Peticiones/GetPeticion/{Guid}

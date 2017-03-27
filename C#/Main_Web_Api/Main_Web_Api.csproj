@@ -103,6 +103,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\MainWebApi20170326095120 - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\Main_Api.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
