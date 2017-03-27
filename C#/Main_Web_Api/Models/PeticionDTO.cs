@@ -17,6 +17,7 @@ namespace Main_Web_Api.Models
         public string Telefono { get; set; }
         [Required]
         [StringLength(50)]
+        [EmailAddress]
         public string Correo { get; set; }
         [Required]
         [StringLength(13)]

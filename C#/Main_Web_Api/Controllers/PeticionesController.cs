@@ -102,12 +102,7 @@ namespace Main_Web_Api.Controllers
                     SavePeticionNoProcesada(_guid, model);
                 else
                 {
-                    HttpClient client = new HttpClient();
-                    client.BaseAddress = new Uri(uriSecApi.Result);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    HttpResponseMessage response = await client.PostAsJsonAsync(_proccess,
+                    var _result = SendPeticion(uriSecApi.Result, _proccess,
                         new PeticionDetalleDTO()
                         {
                             Guid = _guid,
@@ -119,8 +114,31 @@ namespace Main_Web_Api.Controllers
                             Fecha = DateTime.Now.ToLongDateString(),
                             Peticion = model.Peticion
                         });
-                    
-                    if (!response.IsSuccessStatusCode || !response.Content.ReadAsAsync<bool>().Result)
+                    if (_result.Result)
+                    {
+                        var peticiones = db.PeticionesNoProcesadas.Where(p => null != p.Id).ToList();
+                        foreach (var peticion in peticiones)
+                        {
+                            _result = SendPeticion(uriSecApi.Result, _proccess,
+                                new PeticionDetalleDTO()
+                                {
+                                    Guid = peticion.Id,
+                                    Nombre = peticion.Nombre,
+                                    Apellido = peticion.Apellido,
+                                    Telefono = peticion.Telefono,
+                                    Correo = peticion.Correo,
+                                    Cedula = peticion.Cedula,
+                                    Fecha = peticion.Fecha.ToLongDateString(),
+                                    Peticion = peticion.Peticion
+                                });
+                            if (_result.Result)
+                            {
+                                db.Entry(peticion).State = EntityState.Deleted;
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    else
                         SavePeticionNoProcesada(_guid, model);
                 }
             }
@@ -128,6 +146,20 @@ namespace Main_Web_Api.Controllers
             {
                 SavePeticionNoProcesada(_guid, model);
             }
+        }
+
+        private async Task<bool> SendPeticion(string uri, string _proccess, PeticionDetalleDTO model)
+        {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(uri);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            HttpResponseMessage response = await client.PostAsJsonAsync(_proccess, model);
+
+            if (!response.IsSuccessStatusCode || !response.Content.ReadAsAsync<bool>().Result)
+                return false;
+            return true;
         }
 
         private void SavePeticionNoProcesada(Guid _guid, PeticionDTO model)

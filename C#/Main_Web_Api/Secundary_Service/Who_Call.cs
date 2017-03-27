@@ -94,15 +94,18 @@ namespace Main_Web_Api.Secundary_Service
             {
                 foreach (var item in result.Split('|'))
                 {
-                    var _api = Apis.FirstOrDefault(a => a.Uri.Equals(item.Trim(), StringComparison.CurrentCultureIgnoreCase));
-                    if (null == _api)
+                    if (!string.IsNullOrWhiteSpace(item))
                     {
-                        Apis.Add(new UriApi() { Uri = item.Trim(), VisitedAmount = 0, isAlive = false });
-                    }
-                    else
-                    {
-                        _api.VisitedAmount = 0;
-                        _api.isAlive = false;
+                        var _api = Apis.FirstOrDefault(a => a.Uri.Equals(item.Trim(), StringComparison.CurrentCultureIgnoreCase));
+                        if (null == _api)
+                        {
+                            Apis.Add(new UriApi() { Uri = item.Trim(), VisitedAmount = 0, isAlive = false });
+                        }
+                        else
+                        {
+                            _api.VisitedAmount = 0;
+                            _api.isAlive = false;
+                        }
                     }
                 }
             }
